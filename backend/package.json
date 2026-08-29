@@ -1,0 +1,28 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend for sih hackathon",
+  "homepage": "https://github.com/Shubham-Aswal/Joga-Bonito#readme",
+  "bugs": {
+    "url": "https://github.com/Shubham-Aswal/Joga-Bonito/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shubham-Aswal/Joga-Bonito.git"
+  },
+  "license": "ISC",
+  "author": "shubham aswal / nikhil moolya",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "mongoose": "^8.8.1",
+    "nodemon": "^3.1.14"
+  }
+}
