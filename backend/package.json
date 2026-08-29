@@ -19,10 +19,16 @@
     "start": "nodemon server.js"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
+    "express-validator": "^7.3.2",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.8.1",
     "nodemon": "^3.1.14"
+  },
+  "allowScripts": {
+    "express-validator@7.3.2": true
   }
 }
