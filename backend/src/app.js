@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
+import gameRoutes from "./routes/game.routes.js";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/games", gameRoutes);
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
