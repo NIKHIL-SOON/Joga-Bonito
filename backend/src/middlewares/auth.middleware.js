@@ -12,7 +12,7 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
       : null);
 
   if (!token) {
-    throw new ApiError(401, "Unauthorized request");
+    throw new ApiError(401, "Unauthorized request - mdlw");
   }
 
   try {
@@ -20,13 +20,13 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     const user = await User.findOne({ email: decodedToken.email }).select("-password -refreshToken");
 
     if (!user) {
-      throw new ApiError(401, "User not found");
+      throw new ApiError(401, "User not found - mdlw");
     }
 
     req.user = user;
     next();
   } catch (error) {
-    throw new ApiError(401, "Invalid or expired token");
+    throw new ApiError(401, "Invalid or expired token - mdlw");
   }
 });
 

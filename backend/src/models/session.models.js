@@ -62,8 +62,10 @@ const sessionSchema = new mongoose.Schema(
       index: true,
     },
     performance: {
-      type: performanceSchema,
-      default: () => ({}),
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'performance',
+      required: [true, 'performance ID is required'],
+      index: true,
     },
     startedAt: {
       type: Date,
