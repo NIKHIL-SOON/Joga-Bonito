@@ -9,11 +9,6 @@ const gameSchema = new mongoose.Schema(
       lowercase: true,
       trim: true, // e.g., "memory-match", "market-basket", "routine-order"
     },
-    avatar : {
-      type : URL,
-      url : [undefined,""],
-      default : ""
-    },
     name: {
       type: String,
       required: [true, 'Game name is required'],
@@ -26,6 +21,11 @@ const gameSchema = new mongoose.Schema(
       lowercase: true,
     },
     description: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    avatar: {
       type: String,
       default: '',
       trim: true,
@@ -47,3 +47,4 @@ const gameSchema = new mongoose.Schema(
 );
 
 export const Game = mongoose.model('Game', gameSchema);
+export default Game;
