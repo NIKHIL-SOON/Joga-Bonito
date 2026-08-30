@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mindful Moments</title>
+    <script>
+      (function () {
+        try {
+          // Dark mode is opt-in only — defaults to light, never auto-follows
+          // the OS/browser's prefers-color-scheme setting.
+          if (localStorage.getItem("mm-theme") === "dark") {
+            document.documentElement.classList.add("dark");
+          }
+          if (localStorage.getItem("mm-text-scale") === "large") {
+            document.documentElement.classList.add("mm-large-text");
+          }
+        } catch {
+          // ignore — falls back to light mode
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

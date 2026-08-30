@@ -67,26 +67,37 @@ const login = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = await tokenGenerator(user._id);
   const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
-  const accessTokenOptions = {
+  // secure:true unconditionally would mark these cookies Secure even over
+  // plain http://localhost in dev — Postman doesn't care, but a real browser
+  // can (and in some cases will) silently refuse to store them, breaking
+  // every cookie-dependent request afterward. Match the pattern already used
+  // for the _performance cookie elsewhere in this codebase.
+  const cookieOptions = {
     httpOnly: true,
-    secure: true,
-
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
   };
 
-  const refreshTokenOptions = {
-    httpOnly: true,
-    secure: true,
-  
-  };
-
-  res.cookie("accessToken", accessToken, accessTokenOptions);
-  res.cookie("refreshToken", refreshToken, refreshTokenOptions);
+  res.cookie("accessToken", accessToken, cookieOptions);
+  res.cookie("refreshToken", refreshToken, cookieOptions);
 
   return res.status(200).json(
     ApiResponse.success(200, "User logged in successfully", {
       user: loggedInUser,
       accessToken,
       refreshToken,
+    })
+  );
+});
+
+const getMe = asyncHandler(async (req, res) => {
+  if (!req.user) {
+    throw new ApiError(401, "Unauthorized request");
+  }
+
+  return res.status(200).json(
+    ApiResponse.success(200, "Current user fetched successfully", {
+      user: req.user,
     })
   );
 });
@@ -99,12 +110,18 @@ const logoutUser = asyncHandler(async (req, res) => {
   req.user.refreshToken = "";
   await req.user.save({ validateBeforeSave: false });
 
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  };
+
+  res.clearCookie("accessToken", cookieOptions);
+  res.clearCookie("refreshToken", cookieOptions);
 
   return res.status(200).json(
     ApiResponse.success(200, "User logged out successfully", null)
   );
 });
 
-export { registerUser, login, logoutUser };
+export { registerUser, login, getMe, logoutUser };

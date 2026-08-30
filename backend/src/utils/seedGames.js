@@ -36,13 +36,42 @@ export const sampleGames = [
     isActive: true,
   },
   {
-    gameId: "routine-order",
-    name: "Daily Routine Sequencer",
+    gameId: "shopping-cart",
+    name: "Shopping Cart",
     cognitiveDomain: "executive",
     description:
-      "Sequence daily life steps in chronological order to strengthen executive planning and decision-making.",
-    avatar:
-      "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=500&auto=format&fit=crop&q=60",
+      "Fill your basket with as many items as possible without going over budget — planning and number sense under a limit.",
+    avatar: "",
+    defaultDifficulty: 1,
+    isActive: true,
+  },
+  {
+    gameId: "leaves-direction",
+    name: "Leaf Direction",
+    cognitiveDomain: "attention",
+    description:
+      "Orange leaves: press the direction the tip points. Yellow leaves: press the direction it's actually drifting. Watch closely.",
+    avatar: "",
+    defaultDifficulty: 1,
+    isActive: true,
+  },
+  {
+    gameId: "simon-pattern",
+    name: "Simon Pattern",
+    cognitiveDomain: "memory",
+    description:
+      "Watch the colors light up, then repeat the pattern back — it grows by one step every round you get right.",
+    avatar: "",
+    defaultDifficulty: 1,
+    isActive: true,
+  },
+  {
+    gameId: "balloon-pop",
+    name: "Balloon Pop",
+    cognitiveDomain: "motor",
+    description:
+      "Pop the balloons in order from 1 upward, quick and steady — just don't tap a bomb.",
+    avatar: "",
     defaultDifficulty: 1,
     isActive: true,
   },
