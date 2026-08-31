@@ -22,6 +22,41 @@ app.use(cors({
     origin: "https://joga-bonito-cvkz-nir0nz22i-joga-banito.vercel.app",
     credentials: true
 }));
+import cors from 'cors';
+
+// Allow any *.vercel.app domain + localhost
+const allowedOriginRegex = /^https:\/\/.*\.vercel\.app$/;
+
+import cors from 'cors';
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // 1. Allow non-browser clients (curl, Postman, server-to-server)
+    if (!origin) return callback(null, true);
+
+    // 2. Allow any Vercel domain (both production and preview branches)
+    const isVercel = origin.endsWith('.vercel.app');
+
+    // 3. Allow local development (localhost or 127.0.0.1 on any port)
+    const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+
+    if (isVercel || isLocalhost) {
+      // Reflect the incoming origin back to satisfy credentials: true
+      return callback(null, origin);
+    }
+
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200, // Important for legacy browsers & preflight
+};
+
+// Mount CORS middleware at the very top before any routes
+app.use(cors(corsOptions));
+// Express preflight handler
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

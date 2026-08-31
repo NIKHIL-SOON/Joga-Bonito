@@ -73,10 +73,11 @@ const login = asyncHandler(async (req, res) => {
   // every cookie-dependent request afterward. Match the pattern already used
   // for the _performance cookie elsewhere in this codebase.
   const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-  };
+  httpOnly: true,
+  secure: true,        // Required for HTTPS (Render & Vercel)
+  sameSite: 'none',    // MUST be 'none' for cross-domain cookies
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
 
   res.cookie("accessToken", accessToken, cookieOptions);
   res.cookie("refreshToken", refreshToken, cookieOptions);
@@ -110,11 +111,12 @@ const logoutUser = asyncHandler(async (req, res) => {
   req.user.refreshToken = "";
   await req.user.save({ validateBeforeSave: false });
 
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-  };
+ const cookieOptions = {
+  httpOnly: true,
+  secure: true,        // Required for HTTPS (Render & Vercel)
+  sameSite: 'none',    // MUST be 'none' for cross-domain cookies
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
 
   res.clearCookie("accessToken", cookieOptions);
   res.clearCookie("refreshToken", cookieOptions);
