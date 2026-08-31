@@ -19,21 +19,7 @@ const explicitAllowedOrigins = [process.env.FRONTEND_URL].filter(Boolean);
 const localDevOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/;
 
 app.use(
-  cors({
-    origin(origin, callback) {
-      const isAllowed =
-        !origin || // no Origin header at all means a non-browser client (curl, mobile)
-        explicitAllowedOrigins.includes(origin) ||
-        (process.env.NODE_ENV !== "production" && localDevOriginPattern.test(origin));
-
-      if (isAllowed) {
-        callback(null, true);
-      } else {
-        callback(new Error(`Origin ${origin} is not allowed by CORS`));
-      }
-    },
-    credentials: true,
-  })
+  cors()
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
