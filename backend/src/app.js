@@ -52,7 +52,7 @@ const corsOptions = {
 // Mount CORS middleware at the very top before any routes
 app.use(cors(corsOptions));
 // Express preflight handler
-app.options('*', cors(corsOptions));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
