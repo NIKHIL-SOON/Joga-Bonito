@@ -5,10 +5,28 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import sessionRoutes from "./routes/session.routes.js";
 import gameRoutes from "./routes/game.routes.js";
-
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 const app = express();
+app.use(cookieParser())
+
+// A static origin string (or even a fixed list of ports) breaks the moment
+// Vite picks a different port than usual — e.g. because 5173 was already
+// taken, it silently falls back to 5174, 5175, etc. In development, allow
+// any localhost/127.0.0.1 origin regardless of port instead of chasing
+// whichever one the dev server happened to land on.
+const explicitAllowedOrigins = [process.env.FRONTEND_URL].filter(Boolean);
+const localDevOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/;
+
+app.use(cors({
+    origin: "https://joga-bonito-cvkz-nir0nz22i-joga-banito.vercel.app",
+    credentials: true
+}));
+import cors from 'cors';
+
+// Allow any *.vercel.app domain + localhost
+const allowedOriginRegex = /^https:\/\/.*\.vercel\.app$/;
 
 // Parse allowed origins from environment variable (supports comma-separated list)
 const configuredOrigins = (process.env.FRONTEND_URL || "")
