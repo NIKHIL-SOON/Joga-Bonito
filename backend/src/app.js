@@ -3,13 +3,38 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
 import sessionRoutes from "./routes/session.routes.js";
-import gameRoutes from "./routes/game.routes.js";
-import cookieParser from "cookie-parser";
+import cookieParser from "cookie-parser"
+import  gameRoutes from "./routes/game.routes.js"
 dotenv.config();
 
 const app = express();
 app.use(cookieParser())
-app.use(cors());
+
+// A static origin string (or even a fixed list of ports) breaks the moment
+// Vite picks a different port than usual — e.g. because 5173 was already
+// taken, it silently falls back to 5174, 5175, etc. In development, allow
+// any localhost/127.0.0.1 origin regardless of port instead of chasing
+// whichever one the dev server happened to land on.
+const explicitAllowedOrigins = [process.env.FRONTEND_URL].filter(Boolean);
+const localDevOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/;
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      const isAllowed =
+        !origin || // no Origin header at all means a non-browser client (curl, mobile)
+        explicitAllowedOrigins.includes(origin) ||
+        (process.env.NODE_ENV !== "production" && localDevOriginPattern.test(origin));
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin ${origin} is not allowed by CORS`));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
