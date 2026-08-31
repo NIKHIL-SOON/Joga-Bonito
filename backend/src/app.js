@@ -18,9 +18,10 @@ app.use(cookieParser())
 const explicitAllowedOrigins = [process.env.FRONTEND_URL].filter(Boolean);
 const localDevOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/;
 
-app.use(
-  cors()
-);
+app.use(cors({
+    origin: "https://joga-bonito-cvkz-nir0nz22i-joga-banito.vercel.app",
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
