@@ -9,7 +9,19 @@ dotenv.config();
 
 const app = express();
 app.use(cookieParser())
-app.use(cors());
+
+// A static origin string (or even a fixed list of ports) breaks the moment
+// Vite picks a different port than usual — e.g. because 5173 was already
+// taken, it silently falls back to 5174, 5175, etc. In development, allow
+// any localhost/127.0.0.1 origin regardless of port instead of chasing
+// whichever one the dev server happened to land on.
+const explicitAllowedOrigins = [process.env.FRONTEND_URL].filter(Boolean);
+const localDevOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/;
+
+app.use(cors({
+    origin: "https://joga-bonito-cvkz-nir0nz22i-joga-banito.vercel.app",
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

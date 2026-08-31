@@ -47,7 +47,7 @@ const createSession = asyncHandler(async (req, res) => {
   res.cookie("_performance", createdPerformance._id.toString(), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "lax",
   });
 
   return res.status(201).json(
@@ -115,7 +115,7 @@ const endSession = asyncHandler(async (req, res) => {
   res.clearCookie("_performance", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "lax",
   });
 
   // Lookup game for domain metadata

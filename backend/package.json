@@ -32,6 +32,8 @@
   },
   "allowScripts": {
     "express-validator@7.3.2": true,
-    "cookie-parser@1.4.7": true
+    "cookie-parser@1.4.7": true,
+    "bcrypt@6.0.0": true,
+    "fsevents@2.3.3": true
   }
 }
