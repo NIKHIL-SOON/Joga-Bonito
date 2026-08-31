@@ -77,8 +77,9 @@ const createSession = asyncHandler(async (req, res) => {
 
   res.cookie("_performance", createdPerformance._id.toString(), {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+  secure: true,        // Required for HTTPS (Render & Vercel)
+  sameSite: 'none',    // MUST be 'none' for cross-domain cookies
+  maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
   return res.status(201).json(
@@ -146,8 +147,9 @@ const endSession = asyncHandler(async (req, res) => {
 
   res.clearCookie("_performance", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,        // Required for HTTPS (Render & Vercel)
+    sameSite: 'none',    // MUST be 'none' for cross-domain cookies
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
   // Report this result to the Adaptive Engine and let IT decide what happens
