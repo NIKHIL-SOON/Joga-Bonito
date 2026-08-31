@@ -4,7 +4,7 @@
  */
 
 const getAdaptiveEngineUrl = () => {
-  const url = process.env.ADAPTIVE_ENGINE_URL || "http://localhost:8001";
+  const url = process.env.ADAPTIVE_ENGINE_URL || "https://joga-bonito-4.onrender.com";
   return url.replace(/\/+$/, "");
 };
 
