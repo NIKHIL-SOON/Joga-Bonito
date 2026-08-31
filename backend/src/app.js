@@ -18,21 +18,35 @@ app.use(cookieParser())
 const explicitAllowedOrigins = [process.env.FRONTEND_URL].filter(Boolean);
 const localDevOriginPattern = /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/;
 
+import cors from 'cors';
+
+// Allow any *.vercel.app domain + localhost
+const allowedOriginRegex = /^https:\/\/.*\.vercel\.app$/;
+
 app.use(
   cors({
-    origin(origin, callback) {
-      const isAllowed =
-        !origin || // no Origin header at all means a non-browser client (curl, mobile)
-        explicitAllowedOrigins.includes(origin) ||
-        (process.env.NODE_ENV !== "production" && localDevOriginPattern.test(origin));
-
-      if (isAllowed) {
-        callback(null, true);
-      } else {
-        callback(new Error(`Origin ${origin} is not allowed by CORS`));
+    origin: (origin, callback) => {
+      // Allow server-to-server, Postman, curl, or non-browser tools (no origin)
+      if (!origin) {
+        return callback(null, true);
       }
+
+      // Allow localhost on any port
+      const isLocalhost = /^http:\/\/localhost(:\d+)?$/.test(origin);
+
+      // Allow any Vercel domain
+      const isVercel = allowedOriginRegex.test(origin);
+
+      if (isLocalhost || isVercel) {
+        return callback(null, true);
+      }
+
+      // Instead of throwing an error which kills preflight, return false
+      return callback(null, false);
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   })
 );
 app.use(express.json());
