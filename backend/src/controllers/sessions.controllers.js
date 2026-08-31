@@ -3,6 +3,8 @@ import ApiError from "../../utilities/apiError.js";
 import ApiResponse from "../../utilities/apiResponse.js";
 import { Session } from "../models/session.models.js";
 import { Performance } from "../models/performance.model.js";
+import { Game } from "../models/game.models.js";
+import { getAdaptiveState, submitGameScore } from "../services/adaptive.service.js";
 
 const createSession = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
@@ -11,11 +13,19 @@ const createSession = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Unauthorized request");
   }
 
-  const { gameId } = req.body;
+  const { gameId, difficulty: customDifficulty } = req.body;
 
   if (!gameId) {
     throw new ApiError(400, "Game ID is required");
   }
+
+  const normalizedGameId = String(gameId).trim().toLowerCase();
+
+  // Query Adaptive Engine for user's cognitive level
+  const adaptiveState = await getAdaptiveState(userId);
+  const initialDifficulty = customDifficulty
+    ? Math.max(1, Math.min(10, Number(customDifficulty)))
+    : (adaptiveState?.current_level || 1);
 
   const createdPerformance = await Performance.create({
     score: 0,
@@ -28,8 +38,8 @@ const createSession = asyncHandler(async (req, res) => {
 
   const session = await Session.create({
     userId,
-    gameId: String(gameId).trim().toLowerCase(),
-    difficulty: 1,
+    gameId: normalizedGameId,
+    difficulty: initialDifficulty,
     status: "in-progress",
     performance: createdPerformance._id,
   });
@@ -49,6 +59,7 @@ const createSession = asyncHandler(async (req, res) => {
       status: session.status,
       performance: createdPerformance._id,
       startedAt: session.startedAt,
+      adaptive: adaptiveState,
     })
   );
 });
@@ -61,7 +72,7 @@ const endSession = asyncHandler(async (req, res) => {
   }
 
   const {
-    score,
+    score = 0,
     accuracy,
     timeTaken,
     mistakes,
@@ -97,17 +108,55 @@ const endSession = asyncHandler(async (req, res) => {
     { new: true }
   );
 
+  if (!session) {
+    throw new ApiError(404, "Active session record not found");
+  }
+
   res.clearCookie("_performance", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
   });
 
+  // Lookup game for domain metadata
+  const game = await Game.findOne({ gameId: session.gameId });
+  const cognitiveDomain = game?.cognitiveDomain || "memory";
+
+  // Send score and metrics to standalone Adaptive Engine
+  const adaptiveResult = await submitGameScore({
+    userId: session.userId,
+    gameType: session.gameId,
+    score: performanceDoc.score,
+    levelPlayed: session.difficulty,
+    accuracy: performanceDoc.accuracy,
+    responseTime: performanceDoc.timeTaken,
+    mistakes: performanceDoc.mistakes,
+    hintsUsed: performanceDoc.hintsUsed,
+    sessionDuration: performanceDoc.timeTaken,
+    cognitiveDomain,
+  });
+
   return res.status(200).json(
     ApiResponse.success(200, "Session ended successfully", {
       performance: performanceDoc,
+      session,
+      adaptive: adaptiveResult,
     })
   );
 });
 
-export { createSession, endSession };
+const getUserAdaptiveProfile = asyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized request");
+  }
+
+  const adaptiveState = await getAdaptiveState(userId);
+
+  return res.status(200).json(
+    ApiResponse.success(200, "Adaptive profile retrieved successfully", adaptiveState)
+  );
+});
+
+export { createSession, endSession, getUserAdaptiveProfile };
